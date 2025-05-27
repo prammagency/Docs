@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prospect App - Redesigned UI Mockup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: #111111;
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 40px rgba(255, 215, 0, 0.1);
+        }
+        
+        /* Header */
+        .header {
+            background: #1a1a1a;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #333;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .icon-btn {
+            background: none;
+            border: none;
+            color: #FFD700;
+            cursor: pointer;
+            font-size: 20px;
+        }
+        
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 400px;
+            background: #1a1a1a;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            border-top: 1px solid #333;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #888;
+        }
+        
+        .nav-item.active {
+            color: #FFD700;
+        }
+        
+        .nav-icon {
+            font-size: 24px;
+        }
+        
+        .nav-label {
+            font-size: 11px;
+        }
+        
+        /* Dashboard */
+        .dashboard {
+            padding: 20px;
+            padding-bottom: 80px;
+        }
+        
+        .greeting {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .date {
+            color: #888;
+            margin-bottom: 20px;
+        }
+        
+        /* Quick Stats */
+        .quick-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .stat-card {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #333;
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        
+        .stat-label {
+            color: #888;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        
+        /* Today's Priorities */
+        .section-title {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #FFD700;
+        }
+        
+        .priority-card {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #333;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .priority-info h3 {
+            margin-bottom: 5px;
+        }
+        
+        .priority-info p {
+            color: #888;
+            font-size: 14px;
+        }
+        
+        .priority-action {
+            background: #FFD700;
+            color: #000;
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        /* AI Tip */
+        .ai-tip {
+            background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #FFD700;
+            margin-top: 25px;
+        }
+        
+        .ai-tip-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .ai-icon {
+            font-size: 24px;
+        }
+        
+        /* CRM View */
+        .crm-view {
+            display: none;
+            padding: 20px;
+            padding-bottom: 80px;
+        }
+        
+        .search-bar {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            padding: 12px 20px;
+            border-radius: 25px;
+            width: 100%;
+            color: white;
+            margin-bottom: 20px;
+        }
+        
+        .view-toggle {
+            display: flex;
+            background: #1a1a1a;
+            border-radius: 25px;
+            padding: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .toggle-btn {
+            flex: 1;
+            padding: 8px;
+            background: none;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+        
+        .toggle-btn.active {
+            background: #FFD700;
+            color: #000;
+        }
+        
+        /* Pipeline */
+        .pipeline {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding-bottom: 20px;
+        }
+        
+        .stage {
+            min-width: 280px;
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid #333;
+        }
+        
+        .stage-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .stage-count {
+            background: #333;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+        
+        .lead-card {
+            background: #222;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            border: 1px solid #333;
+            transition: all 0.3s;
+        }
+        
+        .lead-card:hover {
+            border-color: #FFD700;
+        }
+        
+        .lead-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .lead-info {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .lead-score {
+            display: inline-block;
+            background: #FFD700;
+            color: #000;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+        
+        /* Content Studio */
+        .content-studio {
+            display: none;
+            padding: 20px;
+            padding-bottom: 80px;
+        }
+        
+        .ai-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .ai-action-card {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #333;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .ai-action-card:hover {
+            border-color: #FFD700;
+            transform: translateY(-2px);
+        }
+        
+        .ai-action-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        /* FAB */
+        .fab {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            background: #FFD700;
+            color: #000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+            transition: all 0.3s;
+        }
+        
+        .fab:hover {
+            transform: scale(1.1);
+        }
+        
+        /* Responsive */
+        @media (min-width: 768px) {
+            .container {
+                margin: 20px auto;
+                border-radius: 12px;
+                overflow: hidden;
+            }
+            
+            .bottom-nav {
+                border-radius: 0 0 12px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">Prospect</div>
+            <div class="header-actions">
+                <button class="icon-btn">🔔</button>
+                <button class="icon-btn">⚙️</button>
+            </div>
+        </div>
+        
+        <!-- Dashboard View -->
+        <div class="dashboard" id="dashboard">
+            <h1 class="greeting">Good morning, Sarah!</h1>
+            <p class="date">Monday, May 26, 2025</p>
+            
+            <!-- Quick Stats -->
+            <div class="quick-stats">
+                <div class="stat-card">
+                    <div class="stat-value">12</div>
+                    <div class="stat-label">New Leads This Week</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">Follow-ups Today</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">Team Members Active</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">85%</div>
+                    <div class="stat-label">Goals Progress</div>
+                </div>
+            </div>
+            
+            <!-- Today's Priorities -->
+            <h2 class="section-title">Today's Top Priorities</h2>
+            
+            <div class="priority-card">
+                <div class="priority-info">
+                    <h3>Follow up with John Smith</h3>
+                    <p>Interested in starter package • Score: 78</p>
+                </div>
+                <button class="priority-action">Call</button>
+            </div>
+            
+            <div class="priority-card">
+                <div class="priority-info">
+                    <h3>Team Training Call</h3>
+                    <p>2:00 PM • 5 members attending</p>
+                </div>
+                <button class="priority-action">Join</button>
+            </div>
+            
+            <div class="priority-card">
+                <div class="priority-info">
+                    <h3>Create Social Content</h3>
+                    <p>Product launch announcement</p>
+                </div>
+                <button class="priority-action">Create</button>
+            </div>
+            
+            <!-- AI Tip -->
+            <div class="ai-tip">
+                <div class="ai-tip-header">
+                    <span class="ai-icon">✨</span>
+                    <h3>AI Insight</h3>
+                </div>
+                <p>Your follow-up rate is 20% higher on Mondays. Consider scheduling important calls for today to maximize conversions!</p>
+            </div>
+        </div>
+        
+        <!-- CRM View -->
+        <div class="crm-view" id="crm">
+            <input type="text" class="search-bar" placeholder="Search contacts...">
+            
+            <div class="view-toggle">
+                <button class="toggle-btn active">Pipeline</button>
+                <button class="toggle-btn">List</button>
+            </div>
+            
+            <div class="pipeline">
+                <div class="stage">
+                    <div class="stage-header">
+                        <h3>New Leads</h3>
+                        <span class="stage-count">4</span>
+                    </div>
+                    
+                    <div class="lead-card">
+                        <div class="lead-name">Emily Rodriguez</div>
+                        <div class="lead-info">Added 2 days ago</div>
+                        <div class="lead-score">Score: 65</div>
+                    </div>
+                    
+                    <div class="lead-card">
+                        <div class="lead-name">Michael Chen</div>
+                        <div class="lead-info">Added today</div>
+                        <div class="lead-score">Score: 72</div>
+                    </div>
+                </div>
+                
+                <div class="stage">
+                    <div class="stage-header">
+                        <h3>Contacted</h3>
+                        <span class="stage-count">3</span>
+                    </div>
+                    
+                    <div class="lead-card">
+                        <div class="lead-name">Sarah Johnson</div>
+                        <div class="lead-info">Last contact: Yesterday</div>
+                        <div class="lead-score">Score: 81</div>
+                    </div>
+                </div>
+                
+                <div class="stage">
+                    <div class="stage-header">
+                        <h3>Presenting</h3>
+                        <span class="stage-count">2</span>
+                    </div>
+                    
+                    <div class="lead-card">
+                        <div class="lead-name">John Smith</div>
+                        <div class="lead-info">Demo scheduled</div>
+                        <div class="lead-score">Score: 92</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Content Studio -->
+        <div class="content-studio" id="content">
+            <h2 class="section-title">AI Content Studio</h2>
+            
+            <div class="ai-actions">
+                <div class="ai-action-card">
+                    <div class="ai-action-icon">📝</div>
+                    <h3>Create Post</h3>
+                    <p>AI-powered content</p>
+                </div>
+                
+                <div class="ai-action-card">
+                    <div class="ai-action-icon">🎬</div>
+                    <h3>Video Script</h3>
+                    <p>Generate scripts</p>
+                </div>
+                
+                <div class="ai-action-card">
+                    <div class="ai-action-icon">🤖</div>
+                    <h3>Avatar Video</h3>
+                    <p>Create AI videos</p>
+                </div>
+                
+                <div class="ai-action-card">
+                    <div class="ai-action-icon">🎨</div>
+                    <h3>Image Gen</h3>
+                    <p>Product graphics</p>
+                </div>
+            </div>
+            
+            <h2 class="section-title">Content Calendar</h2>
+            
+            <div class="priority-card">
+                <div class="priority-info">
+                    <h3>Monday Motivation Post</h3>
+                    <p>Facebook • 10:00 AM</p>
+                </div>
+                <button class="priority-action">Edit</button>
+            </div>
+            
+            <div class="priority-card">
+                <div class="priority-info">
+                    <h3>Product Feature Video</h3>
+                    <p>Instagram • 2:00 PM</p>
+                </div>
+                <button class="priority-action">View</button>
+            </div>
+        </div>
+        
+        <!-- FAB -->
+        <div class="fab">+</div>
+        
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="showView('dashboard')">
+                <span class="nav-icon">🏠</span>
+                <span class="nav-label">Home</span>
+            </div>
+            <div class="nav-item" onclick="showView('crm')">
+                <span class="nav-icon">👥</span>
+                <span class="nav-label">CRM</span>
+            </div>
+            <div class="nav-item" onclick="showView('content')">
+                <span class="nav-icon">✨</span>
+                <span class="nav-label">Content</span>
+            </div>
+            <div class="nav-item">
+                <span class="nav-icon">📈</span>
+                <span class="nav-label">Growth</span>
+            </div>
+            <div class="nav-item">
+                <span class="nav-icon">👨‍👩‍👦</span>
+                <span class="nav-label">Team</span>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function showView(viewId) {
+            // Hide all views
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('crm').style.display = 'none';
+            document.getElementById('content').style.display = 'none';
+            
+            // Show selected view
+            document.getElementById(viewId).style.display = 'block';
+            
+            // Update nav
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.closest('.nav-item').classList.add('active');
+        }
+    </script>
+</body>
+</html>
