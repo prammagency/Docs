@@ -29,10 +29,10 @@ scrub it on scroll.**
 ## 1. The pipeline (end to end)
 
 ```
-[1] Generate keyframe STILLS        → Replicate (Flux / Imagen / Nano-Banana)
+[1] Generate keyframe STILLS        → Replicate (FLUX.2 / Imagen 4 / Seedream)
         every scene start + end frame, consistent style, black bg
                 │
-[2] IMAGE-TO-VIDEO each segment     → Kling 3.0 / Veo / Wan (Replicate) OR Higgsfield
+[2] IMAGE-TO-VIDEO each segment     → Kling Pro (Replicate); Veo 3.1 backup
         feed START frame + END frame → model interpolates the camera move
                 │
 [3] STITCH segments into 1 master   → ffmpeg concat (end frame of A == start of B)
@@ -59,30 +59,64 @@ frame of clip N identical to the first frame of clip N+1.**
 
 ---
 
-## 2. Tool split: Higgsfield vs Replicate
+## 2. Tooling decision (LOCKED): Replicate only — skip Higgsfield
 
-Use both, for what each is best at.
+**Decision: use Replicate for everything. A Higgsfield account is not needed.**
 
-**Higgsfield — use for the camera-driven hero shots.**
-- Best-in-class **camera-motion presets**: push-in, dolly, *crash zoom*,
-  pull-out, orbit — one click, physically believable.
-- **Cinema Studio** lets you pick a virtual camera body, lens, focal length and
-  depth of field, and **stack multiple camera moves** in one shot.
-- Gives access to Kling 3.0 / Veo / Sora under the hood.
-- Best for: the tree push-in (Scene 0→1), the crash-zoom into the molecule
-  (Scene 4), the pull-back to the bottle (Scene 5).
+Why: Higgsfield has no proprietary video engine — it's a polished UI that runs
+the *same* underlying models (Kling, Veo, Sora, Seedance) we can call directly
+on Replicate. Its "camera presets" (push-in, dolly, crash-zoom) are just
+canned prompts; we write the same moves in plain words. Replicate needs no
+subscription, is pay-as-you-go, and is **scriptable** so the whole render
+pipeline lives in our repo. Nothing is lost by skipping Higgsfield.
 
-**Replicate — use for programmatic, batch, and exact frame control.**
-- Run **Flux 1.1 Pro** (or Imagen / Nano-Banana / Recraft / SDXL) for the
-  keyframe stills, with a **fixed seed + style reference** for consistency.
-- Run **Kling / Wan / Veo** via API with explicit **start+end frame**
-  conditioning — scriptable, reproducible, version-controllable.
-- Best for: generating all keyframes in one style, and any shot where you need
-  the precise end frame to match the next clip.
+### 2a. Image generation (the keyframe stills) — Replicate
 
-> Practical combo: **stills + exact transitions on Replicate (API, in your
-> repo), hero camera moves in Higgsfield (manual, art-directed).** Export
-> everything to a common 1920×1080 (or vertical for mobile) @ 24–30 fps.
+Generate every scene's start/end still here first; these define the whole look
+before any video spend. Recommended models (price is not a constraint):
+
+| Model | Use it for |
+|---|---|
+| **FLUX.2 (Pro / Max)** — *primary* | The macro/abstract shots: the olive, the oil & gold droplets, the molecule, the cell. Best photoreal detail + consistency across a batch with a fixed seed. |
+| **Google Imagen 4** — *hero realism* | The most "real photo" look — the opening tree and the fish-in-dark-water shots. |
+| **Seedream 4.5** — *product/label* | The bottle scene, where the **label/text must read correctly** (see §2c). |
+
+Lock a **fixed seed + one style reference image** and reuse it across all
+stills so the six scenes share one look.
+
+### 2b. Image-to-video (the motion between stills) — Replicate
+
+- **Primary: Kling** — newest Pro version on Replicate (currently the v2.x Pro
+  line). On the model page, choose the variant exposing **both `start_image`
+  and `end_image`** — that first/last-frame control is the backbone of our
+  seamless transitions, and Kling leads at it.
+- **Backup: Google Veo 3.1** — a notch more photoreal for the pure atmosphere
+  shots (tree, fish); also supports start/end frames. Only reach for it if a
+  Kling shot underwhelms.
+- We use the **silent / image-to-video tier** — our footage has no audio, so
+  the cheaper tier is also the correct one, not a compromise.
+
+Export everything to a common 1920×1080 (or vertical for mobile) @ 24–30 fps.
+
+### 2c. The gold polyphenol / oil droplets — do we need a real photo?
+
+**No real photo needed — this is exactly what the image models do best.**
+Glowing golden oil droplets and luminous gold particles suspended in dark
+liquid are pure aesthetic macro/abstract imagery, with no brand-accuracy or
+text requirement. FLUX.2 renders this beautifully from a prompt; just steer it
+with words like *"viscous golden-green olive oil droplets, refracting light,
+glowing suspended gold micro-particles, deep black background, hyper-real
+macro, shallow depth of field."* Generate a few seeds and pick the best — no
+photography required.
+
+**The one place a real photo *does* help: the actual bottle + label.** AI is
+unreliable at reproducing a real brand's logo and small label text. So for the
+final bottle scene, the clean route is to **composite a real Zinzino BalanceOil+
+product photo** (or a 3D render of the bottle) into the AI-generated background,
+rather than trusting the model to draw the label. Everything *around* the
+bottle (the pouring streams, the lighting, the black scene) is still AI. If you
+don't have a product shot, Seedream 4.5 is the best at legible labels, but a
+real bottle image will always look cleaner.
 
 ---
 
@@ -212,10 +246,10 @@ still prompt for consistency:
 - **Still B (end):** *Extreme macro of one ripe green Picual olive on black,
   skin translucent, tiny suspended golden particles glowing faintly inside the
   flesh.*
-- **Motion (Higgsfield/Kling, start+end frame):** *Slow continuous dolly push-in
+- **Motion (Kling, start+end frame):** *Slow continuous dolly push-in
   from the wide tree toward a single olive until it fills frame; smooth
   acceleration, no cuts, camera flies into the fruit. Subtle particle drift.*
-  Higgsfield preset: **Dolly / Push-in.**
+  Camera direction: **slow dolly / push-in.**
 
 ### Scene 1→2 — Olive squeezed, polyphenols flow
 - **Still:** *Macro olive being cold-pressed, a stream of luminous golden-green
@@ -232,7 +266,7 @@ still prompt for consistency:
   of light from above, black-blue water.*
 - **Motion:** *Camera follows the stream down into dark water; a silver shoal
   swims into frame and the camera tracks one fish; volumetric light shafts,
-  particles, slow graceful motion.* Higgsfield preset: **Follow / Tracking.**
+  particles, slow graceful motion.* Camera direction: **follow / tracking shot.**
 
 ### Scene 3→4 — Into the fish, the oxidation shield (the money shot)
 - **Still A:** *Macro dive toward a single fish, then abstract: one glowing
@@ -243,7 +277,7 @@ still prompt for consistency:
 - **Motion:** *Crash-zoom into the fish, then macro: left omega-3 molecule
   oxidizes — dims, browns, fractures; right molecule is enveloped by inflowing
   gold particles forming a protective glowing shell, then travels and locks
-  into a glowing cell membrane.* Higgsfield preset: **Crash Zoom → slow macro.**
+  into a glowing cell membrane.* Camera direction: **fast crash-zoom → slow macro.**
   This is the emotional peak — give it the most render time.
 
 ### Scene 4→5 — Convergence into the bottle
@@ -252,7 +286,9 @@ still prompt for consistency:
   pedestal, soft rim light, liquid filling, label resolving.*
 - **Motion:** *Camera pulls back from the cell; two streams (gold + silver)
   spiral and pour into the bottle which assembles and fills with oil; elegant
-  rim-lit reveal, slow rotation.* Higgsfield preset: **Pull-out / Reveal.**
+  rim-lit reveal, slow rotation.* Camera direction: **pull-out / reveal.**
+  *(Composite a real bottle photo — see §2c — rather than letting the model
+  draw the label.)*
 
 ### Scene 5→6 — Settle on product
 - **Still:** *Hero shot of the filled BalanceOil+ bottle, centered, black
@@ -266,11 +302,11 @@ still prompt for consistency:
 
 ## 7. Suggested build order
 
-1. Lock the **6 keyframe stills** (Replicate, one style/seed) — these define the
-   whole look before any video spend.
+1. Lock the **6 keyframe stills** (Replicate — FLUX.2, one style/seed) — these
+   define the whole look before any video spend.
 2. Make sure **each end frame == next start frame.**
-3. Generate the **6 motion clips** (Higgsfield for camera shots, Kling/Wan on
-   Replicate for exact-frame transitions).
+3. Generate the **6 motion clips** on Replicate with **Kling Pro** (start+end
+   frame); use **Veo 3.1** only as a backup for any shot that underwhelms.
 4. **ffmpeg concat** → review the seamless master. Iterate clips, not stills.
 5. Export frame sequence(s), wire **GSAP ScrollTrigger** scrub + pinned text.
 6. Add **reduced-motion / mobile** fallbacks. Ship.
